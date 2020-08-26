@@ -15,30 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Vector2.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="System.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Property.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="EUI2.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Event.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Mouse.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Keyboard.h">
+    <ClInclude Include="Calendar.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="System.cpp">
+    <ClCompile Include="Calendar.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="test.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

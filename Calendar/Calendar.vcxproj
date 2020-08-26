@@ -18,16 +18,24 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Calendar.h" />
+    <ClInclude Include="Property.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Calendar.cpp" />
+    <ClCompile Include="test.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{6b82363c-90b8-4b36-811d-4cdc5f89da4e}</ProjectGuid>
-    <RootNamespace>libeui2</RootNamespace>
+    <ProjectGuid>{3f64c6f0-20cd-47e8-8ceb-bd92c551a38b}</ProjectGuid>
+    <RootNamespace>Calendar</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -138,18 +146,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="EUI2.h" />
-    <ClInclude Include="Event.h" />
-    <ClInclude Include="Keyboard.h" />
-    <ClInclude Include="Mouse.h" />
-    <ClInclude Include="Property.h" />
-    <ClInclude Include="System.h" />
-    <ClInclude Include="Vector2.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="System.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
