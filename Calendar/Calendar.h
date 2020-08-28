@@ -1,5 +1,6 @@
 #pragma once
 #include<stdexcept>
+#include<functional>
 #include<easyx.h>
 #include<windows.h>
 #include<time.h>
@@ -13,8 +14,12 @@ public:
 	void TurnToNow();
 	void TurnToDate(int year, int month, int date);
 	void ToNextDay();
+	void ToLastMonth();
 	void ToNextMonth();
 	void ToNextYear();
+	bool PtInThis(int x, int y);
+	void MousePress(int x,int y,bool* handled);
+	void MouseRelease(int x,int y,bool* handled);
 	Property<int, PropertyMode::ReadWrite>X, Y;
 	Property<int, PropertyMode::ReadWrite>Size;
 	Property<int, PropertyMode::ReadWrite>Year, Month, Date;
@@ -25,14 +30,19 @@ private:
 
 	//计算日期
 	void calc();
+
+	void pt_in_date(int x, int y, bool* handled);
 private:
 	int m_x, m_y;
 	int m_size;
 	int m_year, m_month, m_date;
+	int m_syear, m_smonth, m_sdate;
+	int m_tyear, m_tmonth, m_tdate;
 	int m_first_day;			//这个月的第一天是星期几
 	int m_ldlm;					//last day of last month
 	int m_days;					//当月的天数
 	COLORREF m_theme_color;
+	LOGFONT m_font;
 	static constexpr COLORREF m_gray_color = RGB(200, 200, 200);
 public:
 	class {
@@ -41,6 +51,8 @@ public:
 		TCHAR ch;
 		COLORREF theme_color;
 		COLORREF final_color;
+		std::function<void()>clicked;
+		int font_height;
 		void Init() {
 			x = 1;
 			y = 1;
@@ -72,7 +84,7 @@ public:
 				int g1 = GetGValue(final_color);
 				int b1 = GetBValue(final_color);
 				double t =
-					double(clock() - m_start) * 3 / CLOCKS_PER_SEC;
+					double(clock() - m_start) * 4 / CLOCKS_PER_SEC;
 				if (t > 1)t = 1;
 				int r2 = r + int((r1 - r) * t);
 				int g2 = g + int((g1 - g) * t);
@@ -87,7 +99,7 @@ public:
 				int g1 = GetGValue(final_color);
 				int b1 = GetBValue(final_color);
 				double t =
-					double(clock() - m_start) * 3 / CLOCKS_PER_SEC;
+					double(clock() - m_start) * 4 / CLOCKS_PER_SEC;
 				if (t > 1)t = 1;
 				int r2 = r1 - int((r1 - r) * t);
 				int g2 = g1 - int((g1 - g) * t);
@@ -95,13 +107,23 @@ public:
 				m_current_color = RGB(r2, g2, b2);
 			}
 		}
-		void Mouse_On() {
+		bool PtInThis(int x, int y) {
+			return x >= this->x && y >= this->y &&
+				x <= this->x + this->size &&
+				y <= this->y + this->size;
+		}
+		void MousePress() {
 			m_mouse_on = true;
 			m_start = clock();
 		}
-		void Mouse_Leave() {
+		void MouseRelease() {
 			m_mouse_on = false;
-			m_start = clock();
+			if ((clock() - m_start) * 4 >= CLOCKS_PER_SEC)m_start = clock();
+			else m_start = clock() - (CLOCKS_PER_SEC - clock() + m_start);
+			clicked();
+		}
+		bool MouseDown() {
+			return m_mouse_on;
 		}
 	private:
 		COLORREF m_current_color;//当前渐变色

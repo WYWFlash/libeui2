@@ -4,13 +4,16 @@ constexpr COLORREF Calendar::m_gray_color;
 Calendar::Calendar() :
 	m_x(), m_y(), m_size(200),
 	m_year(1990), m_month(1), m_date(1),
+	m_syear(1990), m_smonth(1), m_sdate(1),
+	m_tyear(1990), m_tmonth(1), m_tdate(1),
 	m_first_day(1), m_ldlm(31),
 	m_days(),
-	m_theme_color(GREEN)
+	m_theme_color(GREEN),
+	m_font()
 {
 	X.Init(m_x);
 	Y.Init(m_y);
-	Size.Init(m_size, [this](const int& size) {if (size > 0)m_size = size; });
+	Size.Init(m_size, [this](const int& size) {if (size > 0)m_size = size; m_bt_right.x = m_size - 29; });
 	Year.Init(m_year, [this](const int& year) {if (year >= 1990)m_year = year; });
 	Month.Init(m_month, [this](const int& month) {if (month > 0)m_month = month; });
 	Date.Init(m_date, [this](const int& date) {if (date > 0)m_date = date; });
@@ -18,9 +21,22 @@ Calendar::Calendar() :
 	m_bt_right.Init();
 	m_bt_left.ch = _T('<');
 	m_bt_right.ch = _T('>');
-	m_bt_right.x = m_size - 30;
-	ThemeColor.Init(m_theme_color);
+	m_bt_left.theme_color = m_theme_color;
+	m_bt_right.theme_color = m_theme_color;
+	m_bt_right.x = m_size - 29;
+	m_bt_left.clicked = [this]() {ToLastMonth(); };
+	m_bt_right.clicked = [this]() {ToNextMonth(); };
+	ThemeColor.Init(m_theme_color, [this](const COLORREF& color) {
+		m_theme_color = color;
+		m_bt_left.theme_color = m_theme_color;
+		m_bt_right.theme_color = m_theme_color;
+					});
 	TurnToNow();
+	m_syear = m_tyear = m_year;
+	m_smonth = m_tmonth = m_month;
+	m_sdate = m_tdate = m_date;
+	m_font.lfHeight = 18;
+	_tcscpy_s(m_font.lfFaceName, _T("黑体"));
 }
 
 void Calendar::Update()
@@ -48,7 +64,7 @@ void Calendar::Draw(IMAGE* working_image)
 	fillrectangle(0, 0, m_size, 30);
 	TCHAR* str = new TCHAR[16];
 
-
+	settextstyle(&m_font);
 	_stprintf_s(str, 16, _T("%s月 %i"), m_months[m_month - 1], m_year);
 	settextcolor(WHITE);
 	setbkmode(TRANSPARENT);
@@ -64,7 +80,7 @@ void Calendar::Draw(IMAGE* working_image)
 	int y = 30 + 5;
 
 	rectangle(0, 30, m_size, 30 + height * 7 + 40);
-	settextcolor(GREEN);
+	settextcolor(m_theme_color);
 
 	for (int i = 0; i < 7; i++) {
 		outtextxy(int(x), y, m_weekdays[i]);
@@ -82,11 +98,26 @@ void Calendar::Draw(IMAGE* working_image)
 	settextcolor(BLACK);
 	int tmp = m_first_day;
 	for (int i = 0; i < m_days; i++) {
-		if (i + 1 == m_date) {
-			setfillcolor(m_theme_color);
+		if (m_year == m_tyear &&
+			m_month == m_tmonth &&
+			i + 1 == m_tdate)
+		{
 			setlinestyle(PS_NULL);
-			fillcircle(int(x + width / 2),
-					   y + height / 2, width / 2 + 3);
+			setfillcolor(m_theme_color);
+			/*circle(int(x + width / 2),
+				   y + height / 2, width / 2 + 3);*/
+			fillrectangle(int(x - 1), int(y - 1),
+						  int(x + width + 2),
+						  int(y + height + 2));
+		}
+		if (m_year == m_syear &&
+			m_month == m_smonth &&
+			i + 1 == m_sdate)
+		{
+			setlinecolor(m_theme_color);
+			setlinestyle(PS_SOLID, 2);
+			rectangle(x - 1, y - 1, x + width + 2,
+					  y + height + 2);
 		}
 		ZeroMemory(str, sizeof str);
 		_stprintf_s(str, 16, _T("%d"), i + 1);
@@ -139,6 +170,17 @@ void Calendar::ToNextDay()
 	TurnToDate(m_year, m_month, m_date);
 }
 
+void Calendar::ToLastMonth()
+{
+	if (m_month - 1 == 0) {
+		if (m_year - 1 < 1900)return;
+		else m_month = 12, --m_year;
+	}
+	else --m_month;
+	calc();
+	if (m_date > m_days)m_date = 1;
+}
+
 void Calendar::ToNextMonth()
 {
 	if (++m_month > 12) {
@@ -156,6 +198,38 @@ void Calendar::ToNextYear()
 	calc();
 	if (m_date > m_days)m_date = 1;
 	TurnToDate(m_year, m_month, m_date);
+}
+
+bool Calendar::PtInThis(int x, int y)
+{
+	settextstyle(&m_font);
+	return x >= m_x && y >= m_y && x <= m_x + m_size &&
+		y <= m_y + 30 + textheight(_T("一")) * 7 + 40;
+}
+
+void Calendar::MousePress(int x, int y, bool* handled)
+{
+	bool result = false;
+	if (m_bt_left.PtInThis(x - m_x, y - m_y)) {
+		m_bt_left.MousePress();
+		result = true;
+	}
+	else if (m_bt_right.PtInThis(x - m_x, y - m_y)) {
+		m_bt_right.MousePress();
+		result = true;
+	}
+	else {
+		pt_in_date(x - m_x, y - m_y, &result);
+	}
+	*handled = result;
+}
+
+void Calendar::MouseRelease(int x, int y, bool* handled)
+{
+	*handled = true;
+	if (m_bt_left.MouseDown())m_bt_left.MouseRelease();
+	else if (m_bt_right.MouseDown())m_bt_right.MouseRelease();
+	else *handled = false;
 }
 
 bool Calendar::is_leap_year(int year)
@@ -183,4 +257,39 @@ void Calendar::calc()
 		}
 	}
 	m_days = days[month - 1];
+}
+
+void Calendar::pt_in_date(int x, int y, bool* handled)
+{
+	settextstyle(&m_font);
+	int width = textwidth(_T('一')),
+		height = textheight(_T('一'));
+	int offset = (m_size - width * 7) / 8;
+	y -= 35 + height;
+	int bx = x / (width + offset),
+		by = y / (height + 5);
+	if (x % int(width + offset) >= offset
+		&& y % (height + 5) >= 5) {
+		*handled = true;
+		int date = by * 7 + bx - m_first_day + 1;
+		if (date <= 0) {
+			ToLastMonth();
+			m_syear = m_year;
+			m_smonth = m_month;
+			m_sdate = m_days + date;
+		}
+		else if (date > m_days &&
+				 date - m_days <= 7 - (m_days + m_first_day) % 7) {
+			m_sdate = date - m_days;
+			ToNextMonth();
+			m_syear = m_year;
+			m_smonth = m_month;
+		}
+		else {
+			m_syear = m_year;
+			m_smonth = m_month;
+			m_sdate = date;
+		}
+		*handled = true;
+	}
 }

@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libeui2", "libeui2\libeui2.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Calendar", "Calendar\Calendar.vcxproj", "{3F64C6F0-20CD-47E8-8CEB-BD92C551A38B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Button", "Button\Button.vcxproj", "{95CD9CAB-9219-4648-9443-28F01930A44F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{3F64C6F0-20CD-47E8-8CEB-BD92C551A38B}.Release|x64.Build.0 = Release|x64
 		{3F64C6F0-20CD-47E8-8CEB-BD92C551A38B}.Release|x86.ActiveCfg = Release|Win32
 		{3F64C6F0-20CD-47E8-8CEB-BD92C551A38B}.Release|x86.Build.0 = Release|Win32
+		{95CD9CAB-9219-4648-9443-28F01930A44F}.Debug|x64.ActiveCfg = Debug|x64
+		{95CD9CAB-9219-4648-9443-28F01930A44F}.Debug|x64.Build.0 = Debug|x64
+		{95CD9CAB-9219-4648-9443-28F01930A44F}.Debug|x86.ActiveCfg = Debug|Win32
+		{95CD9CAB-9219-4648-9443-28F01930A44F}.Debug|x86.Build.0 = Debug|Win32
+		{95CD9CAB-9219-4648-9443-28F01930A44F}.Release|x64.ActiveCfg = Release|x64
+		{95CD9CAB-9219-4648-9443-28F01930A44F}.Release|x64.Build.0 = Release|x64
+		{95CD9CAB-9219-4648-9443-28F01930A44F}.Release|x86.ActiveCfg = Release|Win32
+		{95CD9CAB-9219-4648-9443-28F01930A44F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
